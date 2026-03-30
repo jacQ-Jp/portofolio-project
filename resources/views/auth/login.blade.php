@@ -5,6 +5,22 @@
 @section('content')
     <section class="container mx-auto px-8 py-16">
         <div class="max-w-md mx-auto">
+
+            @auth
+                <div class="mb-8 rounded-xl border border-black/5 bg-white/70 backdrop-blur px-6 py-5 text-center shadow-[0_12px_40px_rgba(0,0,0,0.06)]">
+                    <p class="text-sm text-gray-600">Kamu sudah login sebagai</p>
+                    <p class="mt-1 text-xs tracking-[0.25em] uppercase text-gray-800">{{ auth()->user()->name }}</p>
+
+                    <div class="mt-4 flex items-center justify-center gap-3">
+                        <a href="{{ route('projects.index') }}" class="btn-secondary !py-2 !px-5">Ke Portfolio</a>
+                        <form method="POST" action="{{ route('logout') }}">
+                            @csrf
+                            <button type="submit" class="btn-primary !py-2 !px-5">Logout</button>
+                        </form>
+                    </div>
+                </div>
+            @endauth
+
             <div class="bg-white/80 backdrop-blur rounded-xl border border-black/5 shadow-[0_20px_60px_rgba(0,0,0,0.08)] overflow-hidden">
                 <div class="px-8 pt-10 pb-6 text-center">
                     <h1 class="text-2xl font-semibold tracking-[0.2em] text-gray-800 uppercase">Welcome Back</h1>
@@ -12,6 +28,13 @@
                 </div>
 
                 <div class="px-8 pb-10">
+                    
+                    @if(session('success'))
+                        <div class="mb-6 rounded-lg border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-700">
+                            {{ session('success') }}
+                        </div>
+                    @endif
+
                     @if ($errors->any())
                         <div class="mb-6 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
                             <ul class="list-disc pl-5 space-y-1">
