@@ -300,11 +300,36 @@
                             PORTFOLIO
                         </a>
                     </li>
-                    <li>
-                        <a href="{{ route('projects.create') }}" class="btn-secondary">
-                            + NEW DESIGN
-                        </a>
-                    </li>
+
+                    @auth
+                        <li>
+                            <a href="{{ route('projects.create') }}" class="btn-secondary">
+                                + NEW DESIGN
+                            </a>
+                        </li>
+                        <li class="text-xs tracking-[0.25em] uppercase text-gray-500 hidden sm:block">
+                            {{ auth()->user()->name }}
+                        </li>
+                        <li>
+                            <form method="POST" action="{{ route('logout') }}">
+                                @csrf
+                                <button type="submit" class="text-gray-700 hover:text-gray-900 text-[13px] tracking-[1px] uppercase font-medium">
+                                    Logout
+                                </button>
+                            </form>
+                        </li>
+                    @else
+                        <li>
+                            <a href="{{ route('login.show') }}" class="text-gray-700 hover:text-gray-900">
+                                LOGIN
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{ route('register.show') }}" class="btn-secondary">
+                                REGISTER
+                            </a>
+                        </li>
+                    @endauth
                 </ul>
             </div>
         </div>
