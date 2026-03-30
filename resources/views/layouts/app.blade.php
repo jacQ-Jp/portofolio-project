@@ -320,7 +320,7 @@
                         </li>
                     @else
                         <li>
-                            <a href="{{ route('login.show') }}" class="text-gray-700 hover:text-gray-900">
+                            <a href="{{ route('login') }}" class="text-gray-700 hover:text-gray-900">
                                 LOGIN
                             </a>
                         </li>

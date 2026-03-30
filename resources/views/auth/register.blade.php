@@ -56,7 +56,7 @@
 
                         <div class="pt-2 text-center text-sm text-gray-500">
                             <span>Sudah punya akun?</span>
-                            <a href="{{ route('login.show') }}" class="text-gray-700 hover:text-[#8b7d6f] underline underline-offset-4">Login</a>
+                            <a href="{{ route('login') }}" class="text-gray-700 hover:text-[#8b7d6f] underline underline-offset-4">Login</a>
                         </div>
                     </form>
                 </div>
