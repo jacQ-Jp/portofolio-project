@@ -23,16 +23,16 @@ class AuthController extends Controller
             'password' => ['required', 'confirmed', Password::min(8)],
         ]);
 
-        $user = User::create([
+        User::create([
             'name' => $validated['name'],
             'email' => $validated['email'],
             'password' => Hash::make($validated['password']),
         ]);
 
-        Auth::login($user);
-        $request->session()->regenerate();
-
-        return redirect()->route('projects.index');
+        // Don't auto-login; ask the user to login first.
+        return redirect()
+            ->route('login')
+            ->with('success', 'Registrasi berhasil. Silakan login.');
     }
 
     public function showLogin()
@@ -67,6 +67,6 @@ class AuthController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect()->route('projects.index');
+        return redirect()->route('login');
     }
 }
