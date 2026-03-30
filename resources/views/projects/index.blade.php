@@ -962,6 +962,18 @@
                 <li><a href="#video">Video Editing</a></li>
                 <li><a href="#music">Music & Audio</a></li>
                 <li><a href="#beauty">Beauty & Makeup</a></li>
+
+                @auth
+                    <li class="nav-auth">
+                        <form method="POST" action="{{ route('logout') }}">
+                            @csrf
+                            <button type="submit" class="btn btn-secondary" style="padding: 10px 18px;">
+                                <i class="fas fa-right-from-bracket"></i>
+                                Logout
+                            </button>
+                        </form>
+                    </li>
+                @endauth
             </ul>
         </div>
     </nav>
