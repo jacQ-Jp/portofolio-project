@@ -2,8 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreProjectRequest;
+use App\Http\Requests\UpdateProjectRequest;
 use App\Models\Project;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 
@@ -29,18 +30,9 @@ class ProjectController extends Controller
     /**
      * Store a newly created project in storage.
      */
-    public function store(Request $request)
+    public function store(StoreProjectRequest $request)
     {
-        $validated = $request->validate([
-            'title' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'media' => 'nullable|file|mimes:jpeg,png,jpg,gif,mp4,mov,avi|max:102400',
-            'figma_link' => 'nullable|url',
-            'github_link' => 'nullable|url',
-            'live_link' => 'nullable|url',
-            'tiktok_link' => 'nullable|url',
-            'tags' => 'nullable|string',
-        ]);
+        $validated = $request->validated();
 
         $mediaPath = null;
         $mediaType = null;
@@ -48,7 +40,7 @@ class ProjectController extends Controller
         if ($request->hasFile('media')) {
             $file = $request->file('media');
             $extension = $file->getClientOriginalExtension();
-            
+
             // Tentukan tipe media
             if (in_array($extension, ['jpeg', 'png', 'jpg', 'gif'])) {
                 $mediaType = 'image';
@@ -62,7 +54,7 @@ class ProjectController extends Controller
         Project::create([
             'user_id' => Auth::id(),
             'title' => $validated['title'],
-            'description' => $validated['description'],
+            'description' => $validated['description'] ?? null,
             'media_path' => $mediaPath,
             'media_type' => $mediaType,
             'figma_link' => $validated['figma_link'] ?? null,
@@ -73,7 +65,7 @@ class ProjectController extends Controller
         ]);
 
         return redirect()->route('projects.index')
-                        ->with('success', 'Project berhasil ditambahkan!');
+            ->with('success', 'Project berhasil ditambahkan!');
     }
 
     /**
@@ -81,22 +73,19 @@ class ProjectController extends Controller
      */
     public function edit(Project $project)
     {
+        abort_unless($project->user_id === Auth::id(), 403);
+
         return view('projects.edit', compact('project'));
-    }    /**
+    }
+
+    /**
      * Update the specified project in storage.
      */
-    public function update(Request $request, Project $project)
+    public function update(UpdateProjectRequest $request, Project $project)
     {
-        $validated = $request->validate([
-            'title' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'media' => 'nullable|file|mimes:jpeg,png,jpg,gif,mp4,mov,avi|max:102400',
-            'figma_link' => 'nullable|url',
-            'github_link' => 'nullable|url',
-            'live_link' => 'nullable|url',
-            'tiktok_link' => 'nullable|url',
-            'tags' => 'nullable|string',
-        ]);
+        abort_unless($project->user_id === Auth::id(), 403);
+
+        $validated = $request->validated();
 
         if ($request->hasFile('media')) {
             // Hapus file lama jika ada
@@ -106,7 +95,7 @@ class ProjectController extends Controller
 
             $file = $request->file('media');
             $extension = $file->getClientOriginalExtension();
-            
+
             if (in_array($extension, ['jpeg', 'png', 'jpg', 'gif'])) {
                 $project->media_type = 'image';
                 $project->media_path = $file->store('projects/images', 'public');
@@ -118,7 +107,7 @@ class ProjectController extends Controller
 
         $project->update([
             'title' => $validated['title'],
-            'description' => $validated['description'],
+            'description' => $validated['description'] ?? null,
             'media_path' => $project->media_path,
             'media_type' => $project->media_type,
             'figma_link' => $validated['figma_link'] ?? null,
@@ -129,7 +118,7 @@ class ProjectController extends Controller
         ]);
 
         return redirect()->route('projects.index')
-                        ->with('success', 'Project berhasil diperbarui!');
+            ->with('success', 'Project berhasil diperbarui!');
     }
 
     /**
@@ -137,6 +126,8 @@ class ProjectController extends Controller
      */
     public function destroy(Project $project)
     {
+        abort_unless($project->user_id === Auth::id(), 403);
+
         // Hapus file media jika ada
         if ($project->media_path) {
             Storage::disk('public')->delete($project->media_path);
@@ -145,6 +136,6 @@ class ProjectController extends Controller
         $project->delete();
 
         return redirect()->route('projects.index')
-                        ->with('success', 'Project berhasil dihapus!');
+            ->with('success', 'Project berhasil dihapus!');
     }
 }

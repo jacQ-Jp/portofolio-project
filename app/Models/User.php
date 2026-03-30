@@ -38,4 +38,12 @@ class User extends Authenticatable
     {
         return $this->hasMany(Project::class);
     }
+
+    /**
+     * Get all skills for the user.
+     */
+    public function skills(): HasMany
+    {
+        return $this->hasMany(Skill::class);
+    }
 }
