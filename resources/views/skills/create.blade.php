@@ -1,3 +1,8 @@
+@php
+    header('Location: ' . route('projects.index'));
+    exit;
+@endphp
+
 @extends('layouts.app')
 
 @section('title', 'Add Skill')

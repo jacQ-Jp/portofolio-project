@@ -15,6 +15,7 @@ class Project extends Model
         'description',
         'media_path',
         'media_type',
+        'category',
         'figma_link',
         'github_link',
         'live_link',

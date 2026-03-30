@@ -1110,53 +1110,121 @@
         </div>
     </section>
 
+    <!-- Admin Bar (CRUD Projects) -->
+    @auth
+        <div style="position: fixed; bottom: 24px; right: 24px; z-index: 9998; display:flex; flex-direction:column; gap:12px;">
+            @if(session('success'))
+                <div style="background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.35); color: #d1fae5; padding: 12px 14px; border-radius: 14px; max-width: 320px; backdrop-filter: blur(10px);">
+                    {{ session('success') }}
+                </div>
+            @endif
+            <a href="{{ route('projects.create') }}" class="btn btn-primary" style="justify-content:center;">
+                <i class="fas fa-plus"></i>
+                Tambah Project
+            </a>
+        </div>
+    @endauth
+
     <!-- UI/UX Design Section -->
     <section class="section" id="design">
         <div class="section-header" data-aos="fade-up">
             <h2>UI/UX Design</h2>
             <p>Koleksi desain interface yang modern dan user-friendly</p>
         </div>
+
         <div class="grid">
-            <a href="https://www.figma.com/design/zfqAvxuc7nIFXfpmFG0MGC/Hubber?node-id=34-7078&t=P6g7XNAKBDSgHt7z-0" target="_blank" class="glass-card" data-aos="fade-up" data-aos-delay="100">
-                <img src="assets/hubber.png" alt="F&B" class="card-image">
-                <div class="card-content">
-                    <h3 class="card-title">Halal Ubud Burger</h3>
-                    <p class="card-description">Platform belanja online dengan UX yang intuitif dan visual yang menarik.</p>
-                    <div class="card-meta">
-                        <span class="card-badge">Figma</span>
-                        <span><i class="fas fa-eye"></i> 2.5K views</span>
+            @php
+                $uiuxProjects = $projects->where('category', 'uiux');
+            @endphp
+            @forelse($uiuxProjects as $project)
+                <div class="glass-card" data-aos="fade-up">
+                    @php
+                        $href = $project->figma_link ?: ($project->live_link ?: ($project->github_link ?: ($project->tiktok_link ?: null)));
+                        $isImage = $project->media_type === 'image';
+                        $isVideo = $project->media_type === 'video';
+                        $cover = $project->media_path ? asset('storage/' . $project->media_path) : 'https://picsum.photos/seed/project-'.$project->id.'/400/250';
+                    @endphp
+
+                    @if($href)
+                        <a href="{{ $href }}" target="_blank" style="text-decoration:none; color:inherit; display:block;">
+                    @endif
+
+                    @if($project->media_path)
+                        @if($isImage)
+                            <img src="{{ $cover }}" alt="{{ $project->title }}" class="card-image">
+                        @elseif($isVideo)
+                            <video class="card-image" muted playsinline preload="metadata" style="object-fit: cover; width:100%; height:250px;">
+                                <source src="{{ $cover }}" type="video/mp4">
+                            </video>
+                        @endif
+                    @else
+                        <img src="{{ $cover }}" alt="{{ $project->title }}" class="card-image">
+                    @endif
+
+                    <div class="card-content">
+                        <h3 class="card-title">{{ $project->title }}</h3>
+                        <p class="card-description">{{ $project->description ?: '—' }}</p>
+
+                        <div class="card-meta" style="flex-wrap: wrap; gap: 10px;">
+                            @if($project->tags)
+                                <span class="card-badge">{{ $project->tags }}</span>
+                            @else
+                                <span class="card-badge">UI/UX</span>
+                            @endif
+
+                            @auth
+                                @if($project->user_id === auth()->id())
+                                    <span style="display:inline-flex; gap:10px; margin-left:auto;">
+                                        <a href="{{ route('projects.edit', $project) }}" class="card-badge" style="background: rgba(77,171,247,0.15); border:1px solid rgba(77,171,247,0.35); color: var(--neon-blue); text-decoration:none;">
+                                            <i class="fas fa-pen" style="margin-right:6px;"></i>Edit
+                                        </a>
+
+                                        <form action="{{ route('projects.destroy', $project) }}" method="POST" style="display:inline;" onsubmit="return confirm('Hapus project ini?')">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="card-badge" style="cursor:pointer; background: rgba(239, 68, 68, 0.12); border:1px solid rgba(239, 68, 68, 0.35); color: #fecaca;">
+                                                <i class="fas fa-trash" style="margin-right:6px;"></i>Hapus
+                                            </button>
+                                        </form>
+                                    </span>
+                                @endif
+                            @endauth
+                        </div>
+                    </div>
+
+                    @if($href)
+                        </a>
+                    @endif
+                </div>
+            @empty
+                <div class="glass-card" style="grid-column: 1 / -1;">
+                    <div class="card-content">
+                        <h3 class="card-title">Belum ada project UI/UX</h3>
+                        <p class="card-description">Tambahkan project dengan kategori <strong>UI/UX Design</strong>.</p>
                     </div>
                 </div>
-            </a>
-            <a href="https://www.figma.com/file/your-ecommerce-design" target="_blank" class="glass-card" data-aos="fade-up" data-aos-delay="200">
-                <img src="https://picsum.photos/seed/figma2/400/250" alt="E-Commerce" class="card-image">
-                <div class="card-content">
-                    <h3 class="card-title">E-Commerce Platform</h3>
-                    <p class="card-description">Platform belanja online dengan UX yang intuitif dan visual yang menarik.</p>
-                    <div class="card-meta">
-                        <span class="card-badge">Figma</span>
-                        <span><i class="fas fa-eye"></i> 3.2K views</span>
-                    </div>
-                </div>
-            </a>
-            <a href="https://www.figma.com/file/your-saas-design" target="_blank" class="glass-card" data-aos="fade-up" data-aos-delay="300">
-                <img src="https://picsum.photos/seed/figma3/400/250" alt="SaaS Dashboard" class="card-image">
-                <div class="card-content">
-                    <h3 class="card-title">SaaS Dashboard</h3>
-                    <p class="card-description">Dashboard analytics dengan data visualization yang jelas dan informatif.</p>
-                    <div class="card-meta">
-                        <span class="card-badge">Figma</span>
-                        <span><i class="fas fa-eye"></i> 1.8K views</span>
-                    </div>
-                </div>
-            </a>
+            @endforelse
         </div>
+
         <div class="see-more-container" data-aos="fade-up">
             <button class="see-more-btn" onclick="loadMore('design')">
                 <i class="fas fa-plus"></i> Lihat Selengkapnya
             </button>
         </div>
     </section>
+
+    @php
+        /**
+         * Render card project untuk semua section.
+         */
+        function project_primary_href($project) {
+            return $project->figma_link ?: ($project->live_link ?: ($project->github_link ?: ($project->tiktok_link ?: null)));
+        }
+
+        function project_cover($project) {
+            return $project->media_path ? asset('storage/' . $project->media_path) : 'https://picsum.photos/seed/project-'.$project->id.'/400/250';
+        }
+    @endphp
 
     <!-- Video Editing Section -->
     <section class="section" id="video">
@@ -1165,54 +1233,75 @@
             <p>Konten kreatif dari TikTok hingga editan K-pop yang memukau</p>
         </div>
         <div class="grid">
-            <a href="https://www.tiktok.com/@yourusername/video/1234567890" target="_blank" class="glass-card video-card" data-aos="fade-up" data-aos-delay="100">
-                <img src="https://picsum.photos/seed/video1/400/250" alt="TikTok Video" class="card-image">
-                <div class="video-overlay">
-                    <div class="play-button">
-                        <i class="fas fa-play"></i>
+            @php
+                $videoProjects = $projects->where('category', 'video');
+            @endphp
+            @forelse($videoProjects as $project)
+                @php
+                    $href = project_primary_href($project);
+                    $cover = project_cover($project);
+                    $isImage = $project->media_type === 'image';
+                    $isVideo = $project->media_type === 'video';
+                @endphp
+                <div class="glass-card video-card" data-aos="fade-up">
+                    @if($href)
+                        <a href="{{ $href }}" target="_blank" style="text-decoration:none; color:inherit; display:block;">
+                    @endif
+
+                    @if($project->media_path)
+                        @if($isImage)
+                            <img src="{{ $cover }}" alt="{{ $project->title }}" class="card-image">
+                        @elseif($isVideo)
+                            <video class="card-image" muted playsinline preload="metadata" style="object-fit: cover; width:100%; height:250px;">
+                                <source src="{{ $cover }}" type="video/mp4">
+                            </video>
+                            <div class="video-overlay">
+                                <div class="play-button"><i class="fas fa-play"></i></div>
+                            </div>
+                        @endif
+                    @else
+                        <img src="{{ $cover }}" alt="{{ $project->title }}" class="card-image">
+                        <div class="video-overlay">
+                            <div class="play-button"><i class="fas fa-play"></i></div>
+                        </div>
+                    @endif
+
+                    <div class="card-content">
+                        <h3 class="card-title">{{ $project->title }}</h3>
+                        <p class="card-description">{{ $project->description ?: '—' }}</p>
+                        <div class="card-meta" style="flex-wrap: wrap; gap: 10px;">
+                            <span class="card-badge">Video</span>
+                            @auth
+                                @if($project->user_id === auth()->id())
+                                    <span style="display:inline-flex; gap:10px; margin-left:auto;">
+                                        <a href="{{ route('projects.edit', $project) }}" class="card-badge" style="background: rgba(77,171,247,0.15); border:1px solid rgba(77,171,247,0.35); color: var(--neon-blue); text-decoration:none;">
+                                            <i class="fas fa-pen" style="margin-right:6px;"></i>Edit
+                                        </a>
+                                        <form action="{{ route('projects.destroy', $project) }}" method="POST" style="display:inline;" onsubmit="return confirm('Hapus project ini?')">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="card-badge" style="cursor:pointer; background: rgba(239, 68, 68, 0.12); border:1px solid rgba(239, 68, 68, 0.35); color: #fecaca;">
+                                                <i class="fas fa-trash" style="margin-right:6px;"></i>Hapus
+                                            </button>
+                                        </form>
+                                    </span>
+                                @endif
+                            @endauth
+                        </div>
+                    </div>
+
+                    @if($href)
+                        </a>
+                    @endif
+                </div>
+            @empty
+                <div class="glass-card" style="grid-column: 1 / -1;">
+                    <div class="card-content">
+                        <h3 class="card-title">Belum ada project video</h3>
+                        <p class="card-description">Tambahkan project dengan kategori <strong>Video Editing</strong>.</p>
                     </div>
                 </div>
-                <div class="card-content">
-                    <h3 class="card-title">TikTok Trend Compilation</h3>
-                    <p class="card-description">Kompilasi video TikTok dengan transisi yang smooth dan efek visual yang menarik.</p>
-                    <div class="card-meta">
-                        <span class="card-badge">TikTok</span>
-                        <span><i class="fas fa-play"></i> 15.2K views</span>
-                    </div>
-                </div>
-            </a>
-            <a href="https://www.youtube.com/watch?v=your-kpop-edit" target="_blank" class="glass-card video-card" data-aos="fade-up" data-aos-delay="200">
-                <img src="https://picsum.photos/seed/video2/400/250" alt="K-Pop Edit" class="card-image">
-                <div class="video-overlay">
-                    <div class="play-button">
-                        <i class="fas fa-play"></i>
-                    </div>
-                </div>
-                <div class="card-content">
-                    <h3 class="card-title">K-Pop MV Edit</h3>
-                    <p class="card-description">Edit video musik K-pop dengan color grading cinematic dan motion graphics.</p>
-                    <div class="card-meta">
-                        <span class="card-badge">K-Pop</span>
-                        <span><i class="fas fa-play"></i> 8.7K views</span>
-                    </div>
-                </div>
-            </a>
-            <a href="https://www.instagram.com/reel/your-creative-content" target="_blank" class="glass-card video-card" data-aos="fade-up" data-aos-delay="300">
-                <img src="https://picsum.photos/seed/video3/400/250" alt="Creative Content" class="card-image">
-                <div class="video-overlay">
-                    <div class="play-button">
-                        <i class="fas fa-play"></i>
-                    </div>
-                </div>
-                <div class="card-content">
-                    <h3 class="card-title">Creative Short Film</h3>
-                    <p class="card-description">Film pendek eksperimental dengan storytelling yang unik dan visual aesthetics.</p>
-                    <div class="card-meta">
-                        <span class="card-badge">Short Film</span>
-                        <span><i class="fas fa-play"></i> 5.3K views</span>
-                    </div>
-                </div>
-            </a>
+            @endforelse
         </div>
         <div class="see-more-container" data-aos="fade-up">
             <button class="see-more-btn" onclick="loadMore('video')">
@@ -1228,54 +1317,69 @@
             <p>Hasil cover lagu dan editing audio dari BandLab</p>
         </div>
         <div class="grid">
-            <a href="https://www.bandlab.com/yourusername/midnight-dreams" target="_blank" class="glass-card audio-card" data-aos="fade-up" data-aos-delay="100">
-                <img src="https://picsum.photos/seed/music1/100/100" alt="Cover 1" class="audio-cover">
-                <div class="audio-info">
-                    <h3 class="audio-title">Midnight Dreams</h3>
-                    <p class="audio-artist">Acoustic Cover</p>
-                    <div class="audio-player">
-                        <div class="play-pause">
-                            <i class="fas fa-play"></i>
+            @php
+                $musicProjects = $projects->where('category', 'music');
+            @endphp
+            @forelse($musicProjects as $project)
+                @php
+                    $href = project_primary_href($project);
+                    $cover = project_cover($project);
+                    $isImage = $project->media_type === 'image';
+                    $isVideo = $project->media_type === 'video';
+                @endphp
+                <div class="glass-card" data-aos="fade-up">
+                    @if($href)
+                        <a href="{{ $href }}" target="_blank" style="text-decoration:none; color:inherit; display:block;">
+                    @endif
+
+                    @if($project->media_path)
+                        @if($isImage)
+                            <img src="{{ $cover }}" alt="{{ $project->title }}" class="card-image">
+                        @elseif($isVideo)
+                            <video class="card-image" muted playsinline preload="metadata" style="object-fit: cover; width:100%; height:250px;">
+                                <source src="{{ $cover }}" type="video/mp4">
+                            </video>
+                        @endif
+                    @else
+                        <img src="{{ $cover }}" alt="{{ $project->title }}" class="card-image">
+                    @endif
+
+                    <div class="card-content">
+                        <h3 class="card-title">{{ $project->title }}</h3>
+                        <p class="card-description">{{ $project->description ?: '—' }}</p>
+                        <div class="card-meta" style="flex-wrap: wrap; gap: 10px;">
+                            <span class="card-badge">Music</span>
+                            @auth
+                                @if($project->user_id === auth()->id())
+                                    <span style="display:inline-flex; gap:10px; margin-left:auto;">
+                                        <a href="{{ route('projects.edit', $project) }}" class="card-badge" style="background: rgba(77,171,247,0.15); border:1px solid rgba(77,171,247,0.35); color: var(--neon-blue); text-decoration:none;">
+                                            <i class="fas fa-pen" style="margin-right:6px;"></i>Edit
+                                        </a>
+                                        <form action="{{ route('projects.destroy', $project) }}" method="POST" style="display:inline;" onsubmit="return confirm('Hapus project ini?')">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="card-badge" style="cursor:pointer; background: rgba(239, 68, 68, 0.12); border:1px solid rgba(239, 68, 68, 0.35); color: #fecaca;">
+                                                <i class="fas fa-trash" style="margin-right:6px;"></i>Hapus
+                                            </button>
+                                        </form>
+                                    </span>
+                                @endif
+                            @endauth
                         </div>
-                        <div class="progress-bar">
-                            <div class="progress"></div>
-                        </div>
-                        <span class="duration">3:45</span>
+                    </div>
+
+                    @if($href)
+                        </a>
+                    @endif
+                </div>
+            @empty
+                <div class="glass-card" style="grid-column: 1 / -1;">
+                    <div class="card-content">
+                        <h3 class="card-title">Belum ada project music</h3>
+                        <p class="card-description">Tambahkan project dengan kategori <strong>Music & Audio</strong>.</p>
                     </div>
                 </div>
-            </a>
-            <a href="https://www.bandlab.com/yourusername/electric-feel" target="_blank" class="glass-card audio-card" data-aos="fade-up" data-aos-delay="200">
-                <img src="https://picsum.photos/seed/music2/100/100" alt="Cover 2" class="audio-cover">
-                <div class="audio-info">
-                    <h3 class="audio-title">Electric Feel</h3>
-                    <p class="audio-artist">EDM Remix</p>
-                    <div class="audio-player">
-                        <div class="play-pause">
-                            <i class="fas fa-play"></i>
-                        </div>
-                        <div class="progress-bar">
-                            <div class="progress"></div>
-                        </div>
-                        <span class="duration">4:20</span>
-                    </div>
-                </div>
-            </a>
-            <a href="https://www.bandlab.com/yourusername/sunset-boulevard" target="_blank" class="glass-card audio-card" data-aos="fade-up" data-aos-delay="300">
-                <img src="https://picsum.photos/seed/music3/100/100" alt="Cover 3" class="audio-cover">
-                <div class="audio-info">
-                    <h3 class="audio-title">Sunset Boulevard</h3>
-                    <p class="audio-artist">Lo-fi Beat</p>
-                    <div class="audio-player">
-                        <div class="play-pause">
-                            <i class="fas fa-play"></i>
-                        </div>
-                        <div class="progress-bar">
-                            <div class="progress"></div>
-                        </div>
-                        <span class="duration">2:55</span>
-                    </div>
-                </div>
-            </a>
+            @endforelse
         </div>
         <div class="see-more-container" data-aos="fade-up">
             <button class="see-more-btn" onclick="loadMore('music')">
@@ -1291,39 +1395,69 @@
             <p>Transformasi makeup yang stunning dan inspiratif</p>
         </div>
         <div class="grid">
-            <a href="https://www.instagram.com/p/your-glam-makeup" target="_blank" class="glass-card" data-aos="fade-up" data-aos-delay="100">
-                <img src="https://picsum.photos/seed/beauty1/400/250" alt="Glam Makeup" class="card-image">
-                <div class="card-content">
-                    <h3 class="card-title">Glam Night Look</h3>
-                    <p class="card-description">Makeup glamor dengan teknik contouring yang sempurna untuk acara malam.</p>
-                    <div class="card-meta">
-                        <span class="card-badge">Makeup</span>
-                        <span><i class="fas fa-heart"></i> 4.2K likes</span>
+            @php
+                $makeupProjects = $projects->where('category', 'makeup');
+            @endphp
+            @forelse($makeupProjects as $project)
+                @php
+                    $href = project_primary_href($project);
+                    $cover = project_cover($project);
+                    $isImage = $project->media_type === 'image';
+                    $isVideo = $project->media_type === 'video';
+                @endphp
+                <div class="glass-card" data-aos="fade-up">
+                    @if($href)
+                        <a href="{{ $href }}" target="_blank" style="text-decoration:none; color:inherit; display:block;">
+                    @endif
+
+                    @if($project->media_path)
+                        @if($isImage)
+                            <img src="{{ $cover }}" alt="{{ $project->title }}" class="card-image">
+                        @elseif($isVideo)
+                            <video class="card-image" muted playsinline preload="metadata" style="object-fit: cover; width:100%; height:250px;">
+                                <source src="{{ $cover }}" type="video/mp4">
+                            </video>
+                        @endif
+                    @else
+                        <img src="{{ $cover }}" alt="{{ $project->title }}" class="card-image">
+                    @endif
+
+                    <div class="card-content">
+                        <h3 class="card-title">{{ $project->title }}</h3>
+                        <p class="card-description">{{ $project->description ?: '—' }}</p>
+                        <div class="card-meta" style="flex-wrap: wrap; gap: 10px;">
+                            <span class="card-badge">Makeup</span>
+                            @auth
+                                @if($project->user_id === auth()->id())
+                                    <span style="display:inline-flex; gap:10px; margin-left:auto;">
+                                        <a href="{{ route('projects.edit', $project) }}" class="card-badge" style="background: rgba(77,171,247,0.15); border:1px solid rgba(77,171,247,0.35); color: var(--neon-blue); text-decoration:none;">
+                                            <i class="fas fa-pen" style="margin-right:6px;"></i>Edit
+                                        </a>
+                                        <form action="{{ route('projects.destroy', $project) }}" method="POST" style="display:inline;" onsubmit="return confirm('Hapus project ini?')">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="card-badge" style="cursor:pointer; background: rgba(239, 68, 68, 0.12); border:1px solid rgba(239, 68, 68, 0.35); color: #fecaca;">
+                                                <i class="fas fa-trash" style="margin-right:6px;"></i>Hapus
+                                            </button>
+                                        </form>
+                                    </span>
+                                @endif
+                            @endauth
+                        </div>
+                    </div>
+
+                    @if($href)
+                        </a>
+                    @endif
+                </div>
+            @empty
+                <div class="glass-card" style="grid-column: 1 / -1;">
+                    <div class="card-content">
+                        <h3 class="card-title">Belum ada project makeup</h3>
+                        <p class="card-description">Tambahkan project dengan kategori <strong>Beauty & Makeup</strong>.</p>
                     </div>
                 </div>
-            </a>
-            <a href="https://www.instagram.com/p/your-natural-look" target="_blank" class="glass-card" data-aos="fade-up" data-aos-delay="200">
-                <img src="https://picsum.photos/seed/beauty2/400/250" alt="Natural Look" class="card-image">
-                <div class="card-content">
-                    <h3 class="card-title">Natural Everyday</h3>
-                    <p class="card-description">Tampilan natural yang fresh dengan sentuhan warna earthy tones.</p>
-                    <div class="card-meta">
-                        <span class="card-badge">Makeup</span>
-                        <span><i class="fas fa-heart"></i> 3.8K likes</span>
-                    </div>
-                </div>
-            </a>
-            <a href="https://www.instagram.com/p/your-artistic-makeup" target="_blank" class="glass-card" data-aos="fade-up" data-aos-delay="300">
-                <img src="https://picsum.photos/seed/beauty3/400/250" alt="Creative Makeup" class="card-image">
-                <div class="card-content">
-                    <h3 class="card-title">Artistic Expression</h3>
-                    <p class="card-description">Makeup artistik dengan warna-warna bold dan teknik yang kreatif.</p>
-                    <div class="card-meta">
-                        <span class="card-badge">Makeup</span>
-                        <span><i class="fas fa-heart"></i> 5.1K likes</span>
-                    </div>
-                </div>
-            </a>
+            @endforelse
         </div>
         <div class="see-more-container" data-aos="fade-up">
             <button class="see-more-btn" onclick="loadMore('beauty')">

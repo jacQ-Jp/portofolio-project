@@ -6,7 +6,7 @@
     <div class="text-center mb-16">
         <h1 class="text-5xl md:text-6xl font-light tracking-widest text-gray-800 mb-4">PUBLISH</h1>
         <div class="h-1 w-16 bg-gradient-to-r from-pink-400 to-orange-400 mx-auto rounded-full mb-6"></div>
-        <p class="text-gray-600 font-light text-sm tracking-widest uppercase">Upload your new design to the world</p>
+        <p class="text-gray-600 font-light text-sm tracking-widest uppercase">Upload your new project to the world</p>
     </div>
 
     <!-- Error Messages -->
@@ -28,16 +28,32 @@
         <!-- Section 1: Basic Info -->
         <div class="bg-white p-8 rounded-xl border border-gray-200 shadow-sm">
             <h2 class="text-lg font-semibold tracking-widest text-gray-800 mb-6 flex items-center">
-                <span class="text-pink-400 mr-3">①</span> DESIGN BASICS
+                <span class="text-pink-400 mr-3">①</span> PROJECT BASICS
             </h2>
 
             <!-- Title -->
             <div class="mb-6">
-                <label for="title" class="block text-xs font-semibold tracking-widest text-gray-700 mb-3">DESIGN TITLE <span class="text-red-500">*</span></label>
+                <label for="title" class="block text-xs font-semibold tracking-widest text-gray-700 mb-3">PROJECT TITLE <span class="text-red-500">*</span></label>
                 <input type="text" id="title" name="title" value="{{ old('title') }}" 
-                       placeholder="Give your design a memorable name..." 
+                       placeholder="Give your project a memorable name..." 
                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-300 font-light text-sm @error('title') border-red-500 @enderror">
                 @error('title')
+                    <p class="text-red-500 text-xs mt-2 font-light">{{ $message }}</p>
+                @enderror
+            </div>
+
+            <!-- Category -->
+            <div class="mt-6">
+                <label for="category" class="block text-xs font-semibold tracking-widest text-gray-700 mb-3">CATEGORY <span class="text-red-500">*</span></label>
+                <select id="category" name="category"
+                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-300 font-light text-sm bg-white @error('category') border-red-500 @enderror">
+                    <option value="" disabled {{ old('category') ? '' : 'selected' }}>Select category...</option>
+                    <option value="uiux" {{ old('category') === 'uiux' ? 'selected' : '' }}>UI/UX Design</option>
+                    <option value="video" {{ old('category') === 'video' ? 'selected' : '' }}>Video Editing</option>
+                    <option value="music" {{ old('category') === 'music' ? 'selected' : '' }}>Music & Audio</option>
+                    <option value="makeup" {{ old('category') === 'makeup' ? 'selected' : '' }}>Beauty & Makeup</option>
+                </select>
+                @error('category')
                     <p class="text-red-500 text-xs mt-2 font-light">{{ $message }}</p>
                 @enderror
             </div>
@@ -45,7 +61,7 @@
             <!-- Description -->
             <div>
                 <label for="description" class="block text-xs font-semibold tracking-widest text-gray-700 mb-3">DESCRIPTION</label>
-                <textarea id="description" name="description" rows="4" placeholder="Tell the story of your design. What inspired it? What makes it special?..." 
+                <textarea id="description" name="description" rows="4" placeholder="Tell the story of your project. What inspired it? What makes it special?..." 
                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-300 font-light text-sm @error('description') border-red-500 @enderror">{{ old('description') }}</textarea>
                 @error('description')
                     <p class="text-red-500 text-xs mt-2 font-light">{{ $message }}</p>
@@ -144,11 +160,11 @@
                 <span class="text-pink-400 mr-3">④</span> TAGS
             </h2>
 
-            <label for="tags" class="block text-xs font-semibold tracking-widest text-gray-700 mb-3">DESIGN TAGS</label>
+            <label for="tags" class="block text-xs font-semibold tracking-widest text-gray-700 mb-3">PROJECT TAGS</label>
             <input type="text" id="tags" name="tags" value="{{ old('tags') }}" 
-                   placeholder="UI Design, Web Design, Animation, Branding..." 
+                   placeholder="UI Design, Video Cover, Makeup Look, Audio Mix..." 
                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-300 font-light text-sm @error('tags') border-red-500 @enderror">
-            <p class="text-gray-500 text-xs mt-2 font-light">Separate tags with commas for easy discovery</p>
+            <p class="text-gray-500 text-xs mt-2 font-light">Separate tags with commas (e.g., UI/UX, Mobile App, 2024)</p>
             @error('tags')
                 <p class="text-red-500 text-xs mt-2 font-light">{{ $message }}</p>
             @enderror
@@ -160,7 +176,7 @@
                 CANCEL
             </a>
             <button type="submit" class="flex-1 text-center py-3 px-6 rounded-lg bg-gradient-to-r from-pink-400 to-orange-400 hover:from-pink-500 hover:to-orange-500 text-white font-semibold tracking-widest text-xs transition shadow-lg hover:shadow-xl uppercase">
-                PUBLISH DESIGN
+                PUBLISH PROJECT
             </button>
         </div>
     </form>
@@ -267,6 +283,7 @@ function handleFile() {
 </script>
 @endsection
 
+@section('content')
 <style>
     .section-title {
         font-size: 2.5rem;

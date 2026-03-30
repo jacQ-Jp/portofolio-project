@@ -3,7 +3,6 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\AuthController;
-use App\Http\Controllers\SkillController;
 
 // Auth
 Route::get('/register', [AuthController::class, 'showRegister'])->name('register.show')->middleware('guest');
@@ -24,12 +23,4 @@ Route::middleware('ensure.auth')->group(function () {
     Route::get('/projects/{project}/edit', [ProjectController::class, 'edit'])->name('projects.edit');
     Route::put('/projects/{project}', [ProjectController::class, 'update'])->name('projects.update');
     Route::delete('/projects/{project}', [ProjectController::class, 'destroy'])->name('projects.destroy');
-
-    // Skills
-    Route::get('/skills', [SkillController::class, 'index'])->name('skills.index');
-    Route::get('/skills/create', [SkillController::class, 'create'])->name('skills.create');
-    Route::post('/skills', [SkillController::class, 'store'])->name('skills.store');
-    Route::get('/skills/{skill}/edit', [SkillController::class, 'edit'])->name('skills.edit');
-    Route::put('/skills/{skill}', [SkillController::class, 'update'])->name('skills.update');
-    Route::delete('/skills/{skill}', [SkillController::class, 'destroy'])->name('skills.destroy');
 });

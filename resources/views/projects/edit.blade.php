@@ -43,6 +43,21 @@
                 @enderror
             </div>
 
+            <!-- Category -->
+            <div class="mt-6">
+                <label for="category" class="block text-xs font-semibold tracking-widest text-gray-700 mb-3">CATEGORY <span class="text-red-500">*</span></label>
+                <select id="category" name="category"
+                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-300 font-light text-sm bg-white @error('category') border-red-500 @enderror">
+                    <option value="uiux" {{ old('category', $project->category) === 'uiux' ? 'selected' : '' }}>UI/UX Design</option>
+                    <option value="video" {{ old('category', $project->category) === 'video' ? 'selected' : '' }}>Video Editing</option>
+                    <option value="music" {{ old('category', $project->category) === 'music' ? 'selected' : '' }}>Music & Audio</option>
+                    <option value="makeup" {{ old('category', $project->category) === 'makeup' ? 'selected' : '' }}>Beauty & Makeup</option>
+                </select>
+                @error('category')
+                    <p class="text-red-500 text-xs mt-2 font-light">{{ $message }}</p>
+                @enderror
+            </div>
+
             <!-- Description -->
             <div>
                 <label for="description" class="block text-xs font-semibold tracking-widest text-gray-700 mb-3">DESCRIPTION</label>
@@ -285,6 +300,7 @@ function handleFile() {
 </script>
 @endsection
 
+@section('content')
 <style>
     .section-title {
         font-size: 2.5rem;

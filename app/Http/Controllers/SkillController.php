@@ -1,5 +1,12 @@
 <?php
 
+/**
+ * NOTE:
+ * Fitur Skills saat ini tidak dipakai oleh UI portfolio utama (halaman `projects.index`).
+ * Route skills juga sudah dihapus dari `routes/web.php`.
+ * File ini bisa dihapus jika kamu ingin benar-benar bersih.
+ */
+
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreSkillRequest;
